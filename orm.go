@@ -1,13 +1,15 @@
 package ToyORM
 
 import (
+	"ToyORM/dialect"
 	"ToyORM/log"
 	"ToyORM/session"
 	"database/sql"
 )
 
 type Engine struct {
-	db *sql.DB
+	db      *sql.DB
+	dialect dialect.Dialect
 }
 
 func NewEngine(driver, source string) (e *Engine, err error) {
@@ -19,7 +21,12 @@ func NewEngine(driver, source string) (e *Engine, err error) {
 	if err = db.Ping(); err != nil {
 		log.Error(err)
 	}
-	e = &Engine{db: db}
+	dial, ok := dialect.GetDialect(driver)
+	if !ok {
+		log.Errorf("Dialect %s Not Found", driver)
+		return
+	}
+	e = &Engine{db: db, dialect: dial}
 	log.Info("Connect database success")
 	return
 }
@@ -32,5 +39,5 @@ func (e *Engine) Close() {
 }
 
 func (e *Engine) NewSession() *session.Session {
-	return session.New(e.db)
+	return session.New(e.db, e.dialect)
 }
