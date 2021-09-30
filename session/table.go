@@ -38,7 +38,7 @@ func (s *Session) DropTable() error {
 	return err
 }
 
-func (s *Session) HashTable() bool {
+func (s *Session) HasTable() bool {
 	sql, values := s.dialect.TableExistSQL(s.RefTable().Name)
 	row := s.Raw(sql, values...).QueryRow()
 	var tmp string
