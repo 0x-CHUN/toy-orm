@@ -10,13 +10,13 @@ type Account struct {
 	Password string
 }
 
-func (a *Account) BeforeInsert() error {
+func (a *Account) BeforeInsert(s *Session) error {
 	log.Info("Before insert", a)
 	a.ID += 1000
 	return nil
 }
 
-func (a *Account) AfterQuery() error {
+func (a *Account) AfterQuery(s *Session) error {
 	log.Info("After query", a)
 	a.Password = "******"
 	return nil
